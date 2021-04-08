@@ -9,7 +9,4 @@ public class Piece {
         this.val = val;
     }
 
-    public String toString() {
-        return struct + Integer.toString(val);
-    }
 }

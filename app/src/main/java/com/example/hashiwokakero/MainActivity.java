@@ -29,6 +29,10 @@ public class MainActivity extends WearableActivity {
     private Map<ImageView, Piece> imageViewToSquare;
     private Map<String, Integer> structToColor;
 
+    private String rowSplit = "\n";
+    private String colSplit = ";";
+    private String pieceSplit = ",";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,16 +103,28 @@ public class MainActivity extends WearableActivity {
 
     public Board convertGame(String pyGame) {
         List<List<Piece>> board = new ArrayList<>();
-        String[] rows = pyGame.split("\n");
+        String[] rows = pyGame.split(rowSplit);
         for(String row : rows) {
-            String[] cols = row.split(";");
+            String[] cols = row.split(colSplit);
             List<Piece> column = new ArrayList<>();
             for(String col : cols) {
-                String[] split = col.split(",");
+                String[] split = col.split(pieceSplit);
                 column.add(new Piece(split[0], Integer.parseInt(split[1])));
             }
             board.add(column);
         }
         return(new Board(board));
+    }
+
+    public String convertGame(Board javaGame) {
+        StringBuilder converted = new StringBuilder();
+        for(List<Piece> i : javaGame.getBoard()) {
+            for(Piece y : i) {
+                converted.append(y.struct + pieceSplit + y.val);
+            }
+            converted.append(colSplit);
+        }
+        converted.append(rowSplit);
+        return converted.toString();
     }
 }

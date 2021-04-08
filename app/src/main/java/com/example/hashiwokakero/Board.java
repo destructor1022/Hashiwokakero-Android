@@ -12,11 +12,4 @@ public class Board {
     public List<List<Piece>> getBoard() {
         return board;
     }
-
-    @Override
-    public String toString() {
-        return "Board{" +
-                "board=" + board +
-                '}';
-    }
 }
