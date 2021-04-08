@@ -56,14 +56,12 @@ public class MainActivity extends WearableActivity {
 
         Python py = Python.getInstance();
         PyObject pyobj = py.getModule("play");
-
         PyObject obj = pyobj.callAttr("easy", "ellipse", gridDimensions[0], gridDimensions[1]);
-
         String pyGame = obj.toString();
 
-        Board javaGame = convertGame(pyGame);
-
-        createLayout(this, javaGame);
+        Board completeGame = convertGame(pyGame, "complete");
+        Board userGame = convertGame(pyGame, "user");
+        createLayout(this, userGame);
 
         // Enables Always-on
         setAmbientEnabled();
@@ -101,7 +99,7 @@ public class MainActivity extends WearableActivity {
         iv.setColorFilter(ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
-    public Board convertGame(String pyGame) {
+    public Board convertGame(String pyGame, String type) {
         List<List<Piece>> board = new ArrayList<>();
         String[] rows = pyGame.split(rowSplit);
         for(String row : rows) {
@@ -109,7 +107,12 @@ public class MainActivity extends WearableActivity {
             List<Piece> column = new ArrayList<>();
             for(String col : cols) {
                 String[] split = col.split(pieceSplit);
-                column.add(new Piece(split[0], Integer.parseInt(split[1])));
+                if(type.equals("user") && split[0].equals("bridge")) {
+                    column.add(new Piece("open", Integer.parseInt(split[1])));
+                }
+                else {
+                    column.add(new Piece(split[0], Integer.parseInt(split[1])));
+                }
             }
             board.add(column);
         }
