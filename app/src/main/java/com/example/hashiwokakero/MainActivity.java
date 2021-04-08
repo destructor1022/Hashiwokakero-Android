@@ -26,6 +26,7 @@ public class MainActivity extends WearableActivity {
     private BoxInsetLayout rootLayout;
 
     private Map<Piece, ImageView> squareToImageView;
+    private Map<ImageView, Piece> imageViewToSquare;
     private Map<String, Integer> structToColor;
 
     @Override
@@ -37,12 +38,13 @@ public class MainActivity extends WearableActivity {
 
         gridDimensions = new int[]{10, 10};
         squareToImageView = new HashMap<>();
+        imageViewToSquare = new HashMap<>();
         structToColor = new HashMap<>();
+
         structToColor.put("open", R.color.black);
         structToColor.put("closed", R.color.black);
         structToColor.put("node", R.color.dark_red);
         structToColor.put("bridge", R.color.green);
-
 
         if (! Python.isStarted()) {
             Python.start(new AndroidPlatform(this));
@@ -55,23 +57,20 @@ public class MainActivity extends WearableActivity {
 
         String pyGame = obj.toString();
 
-        List<List<Piece>> javaGame = convertGame(pyGame);
+        Board javaGame = convertGame(pyGame);
 
         createLayout(this, javaGame);
-
-
-
 
         // Enables Always-on
         setAmbientEnabled();
     }
 
-    public void createLayout(Context context, List<List<Piece>> javaGame) {
+    public void createLayout(Context context, Board javaGame) {
         LinearLayout parent = new LinearLayout(context);
         parent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT));
         parent.setOrientation(LinearLayout.HORIZONTAL);
-        for(List<Piece> horizontal : javaGame) {
+        for(List<Piece> horizontal : javaGame.getBoard()) {
             LinearLayout row = new LinearLayout(context);
             row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -98,7 +97,7 @@ public class MainActivity extends WearableActivity {
         iv.setColorFilter(ContextCompat.getColor(context, color), android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
-    public List<List<Piece>> convertGame(String pyGame) {
+    public Board convertGame(String pyGame) {
         List<List<Piece>> board = new ArrayList<>();
         String[] rows = pyGame.split("\n");
         for(String row : rows) {
@@ -110,7 +109,6 @@ public class MainActivity extends WearableActivity {
             }
             board.add(column);
         }
-
-        return board;
+        return(new Board(board));
     }
 }
